@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.2.0 http://maven.apache.org/xsd/settings-1.2.0.xsd"
+    xmlns="http://maven.apache.org/SETTINGS/1.2.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <servers>
+    <server>
+      <username>YOUR_NEXUS_USERNAME</username>
+      <password>YOUR_NEXUS_PASSWORD</password>
+      <id>central</id>
+    </server>
+
+    <server>
+      <username>YOUR_NEXUS_USERNAME</username>
+      <password>YOUR_NEXUS_PASSWORD</password>
+      <id>snapshots</id>
+    </server>
+  </servers>
+
+  <profiles>
+    <profile>
+
+      <repositories>
+
+        <repository>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+
+          <id>central</id>
+          <name>Java-WebApp-Frontend-Releases</name>
+          <url>http://NEXUS_SERVER_IP:8081/repository/Java-WebApp-frontend-releases/</url>
+
+        </repository>
+
+        <repository>
+
+          <snapshots/>
+
+          <id>snapshots</id>
+          <name>Java-WebApp-Snapshots</name>
+          <url>http://NEXUS_SERVER_IP:8081/repository/Java-WebApp-Snapshots/</url>
+
+        </repository>
+
+      </repositories>
+
+      <pluginRepositories>
+
+        <pluginRepository>
+
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+
+          <id>central</id>
+          <name>Java-WebApp-Frontend-Releases</name>
+          <url>http://NEXUS_SERVER_IP:8081/repository/Java-WebApp-frontend-releases/</url>
+
+        </pluginRepository>
+
+        <pluginRepository>
+
+          <snapshots/>
+
+          <id>snapshots</id>
+          <name>Java-WebApp-Snapshots</name>
+          <url>http://NEXUS_SERVER_IP:8081/repository/Java-WebApp-Snapshots/</url>
+
+        </pluginRepository>
+
+      </pluginRepositories>
+
+      <id>nexus</id>
+
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <activeProfile>nexus</activeProfile>
+  </activeProfiles>
+
+</settings>
