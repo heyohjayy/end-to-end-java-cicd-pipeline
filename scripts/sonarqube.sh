@@ -18,7 +18,7 @@
 # - Amazon Corretto JDK 21
 # - SonarQube Community Edition
 #
-# SonarQube is installed into:
+# SonarQube is installed in:
 # /opt/sonarqube
 #
 # The script is designed to be idempotent
@@ -31,7 +31,7 @@ set -euo pipefail
 
 if [ "$EUID" -eq 0 ]; then
     echo "❌ DO NOT RUN THIS SCRIPT WITH SUDO."
-    echo "❌ RUN 👉🏾 ./sonarqubebuild.sh"
+    echo "❌ RUN 👉🏾 ./sonarqube.sh"
     exit 1
 fi
 
@@ -343,8 +343,8 @@ echo "======================================"
 echo "🔐 DEFAULT SONARQUBE LOGIN"
 echo "======================================"
 
-echo "Username : admin"
-echo "Password : admin"
+echo "Username:  admin"
+echo "Password:  admin"
 
 echo "======================================"
 echo "⚠️  AWS SECURITY GROUP REMINDER"
@@ -362,7 +362,7 @@ echo "http://${PUBLIC_IP}:9000"
 
 echo "======================================"
 echo "✅ SONARQUBE INSTALLATION COMPLETED"
-echo "Version      : ${SONAR_VERSION}"
-echo "Install Path : ${INSTALL_DIR}"
-echo "Service      : sonarqube"
+echo "Version         : ${SONAR_VERSION}"
+echo "Install Path    : ${INSTALL_DIR}"
+echo "Service         : sonarqube"
 echo "======================================"
