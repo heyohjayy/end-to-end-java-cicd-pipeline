@@ -2,8 +2,6 @@
 
 For an overview of the project architecture and implementation, see [README.md](README.md).
 
----
-
 # 1. Introduction
 
 This document provides a step-by-step guide for deploying and configuring the end-to-end Java CI/CD pipeline presented in this repository.
@@ -12,48 +10,25 @@ The implementation provisions four dedicated Amazon EC2 instances, each responsi
 
 The pipeline is implemented using a **Jenkins Freestyle Job**, which is automatically triggered by a GitHub Webhook whenever changes are pushed to the configured repository.
 
-Following this guide will result in a fully functional CI/CD environment capable of automatically building, analysing, storing, deploying, and validating a Java web application.
-
----
+Following this guide will result in a fully functional CI/CD environment pipeline capable of automatically building, analysing, storing, deploying, and validating a Java web application.
 
 # 2. Prerequisites
 
 Before beginning the implementation, ensure the following requirements are available.
 
-## 2.1 AWS Account
+| Requirement | Description |
+|-------------|-------------|
+| **AWS Account** | An active AWS account with permission to create and manage Amazon EC2 instances. |
+| **GitHub Account** | A GitHub account for hosting the application source code and configuring GitHub Webhooks. |
+| **Slack Workspace** | A Slack workspace for receiving Jenkins build notifications. |
+| **Local Machine** | A Windows, Linux, or macOS machine with:<br>• Terminal or PowerShell<br>• SSH client<br>• Web browser<br>• Internet connectivity |
+| **EC2 Key Pair** | Create or use an existing EC2 key pair. Download the `.pem` file and store it securely, as it will be required when connecting to each server via SSH. |
 
-An active AWS account with permission to create and manage Amazon EC2 instances.
-
-## 2.2 GitHub Account
-
-A GitHub account for hosting the application source code and configuring GitHub Webhooks.
-
-## 2.3 Slack Workspace
-
-A Slack workspace for receiving Jenkins build notifications.
-
-## 2.4 Local Machine
-
-A Windows, Linux, or macOS machine with:
-
-- Terminal or PowerShell
-- SSH client
-- Web browser
-- Internet connectivity
-
-## 2.5 EC2 Key Pair
-
-Create or use an existing EC2 key pair.
-
-Download the `.pem` file and store it securely, as it will be required when connecting to each server via SSH.
-
-Example:
+**Example**
 
 ```text
 jenkins.pem
 ```
-
----
 
 # 3. Infrastructure Deployment
 
@@ -70,8 +45,6 @@ Launch the following Ubuntu Server 24.04 LTS Amazon EC2 instances.
 
 Use an instance type that provides sufficient resources for each service. SonarQube and Nexus Repository Manager typically require more memory than Jenkins and Tomcat.
 
----
-
 ## 3.2 Security Groups
 
 Configure the required inbound rules before provisioning each server.
@@ -86,8 +59,6 @@ Configure the required inbound rules before provisioning each server.
 | Tomcat | 8080 |
 
 Restrict access where appropriate based on your environment.
-
----
 
 ## 3.3 Connect to Each Server
 
@@ -112,8 +83,6 @@ sudo apt upgrade -y
 
 Repeat this process for each server before beginning the installation steps.
 
----
-
 ## 3.4 Server Hostnames
 
 Assign a meaningful hostname to each server to simplify administration.
@@ -137,13 +106,9 @@ Verify the hostname.
 hostnamectl
 ```
 
----
-
 # 4. Jenkins Server Setup
 
 This section covers the installation and initial configuration of Jenkins, which serves as the central orchestration server for the CI/CD pipeline.
-
----
 
 ## 4.1 Provision the Jenkins Server
 
@@ -175,8 +140,6 @@ Run the installation script.
 
 The script installs and configures Jenkins together with its required dependencies.
 
----
-
 ## 4.2 Verify the Installation
 
 The installation script automatically enables and starts the Jenkins service.
@@ -205,8 +168,6 @@ After the plugin installation completes, create the administrator account and co
 
 ![Jenkins Dashboard](screenshots/01-jenkins-dashboard.png)
 
----
-
 ## 4.3 Create the Jenkins Freestyle Job
 
 From the Jenkins dashboard, create a new **Freestyle Project**.
@@ -232,8 +193,6 @@ Configure the following:
 The Git plugin enables Jenkins to clone the latest version of the repository whenever a build is triggered.
 
 ![Jenkins Job Configuration](screenshots/05-jenkins-job-configuration.png)
-
----
 
 ## 4.4 Jenkins Maven Integration
 
@@ -284,13 +243,9 @@ Run a build to verify that Maven successfully locates the `pom.xml` file and pac
 
 ![Maven Build Success](screenshots/06-maven-build-success.png)
 
----
-
 # 5. SonarQube Server Setup
 
 This section covers the provisioning of the SonarQube server and its integration with Jenkins for automated static code analysis.
-
----
 
 ## 5.1 Provision the SonarQube Server
 
@@ -320,8 +275,6 @@ Run the installation script.
 ./sonarqube.sh
 ```
 
----
-
 ## 5.2 Verify the Installation
 
 The installation script automatically installs and starts SonarQube.
@@ -343,8 +296,6 @@ You will be prompted to change the default password after the first login.
 
 
 ![SonarQube Dashboard](screenshots/08-sonarqube-dashboard.png)
-
----
 
 ## 5.3 Integrate SonarQube with Maven (Current Project Implementation)
 
@@ -375,8 +326,6 @@ Name your token, select an expiration timeframe, click Generate, and copy the va
 ```
 
 > **Note:** This project integrates SonarQube directly through the project's `pom.xml`. This approach was used during the implementation of this project and is suitable for learning and small-scale environments.
-
----
 
 ## 5.4 Alternative Method (Jenkins SonarQube Plugin)
 
@@ -419,8 +368,6 @@ Generate an authentication token from SonarQube like in **step 5.3** above and a
 
 Save the configuration.
 
----
-
 ## 5.5 Run the SonarQube Analysis
 
 Return to the Jenkins Freestyle Job configuration.
@@ -439,13 +386,9 @@ After the build completes successfully, open the SonarQube dashboard to verify t
 
 ![SonarQube Quality Gate](screenshots/09-sonarqube-quality-gate.png)
 
----
-
 # 6. Nexus Repository Setup
 
 This section covers the provisioning of the Nexus Repository server and its integration with Jenkins for artifact storage and version management.
-
----
 
 ## 6.1 Provision the Nexus Server
 
@@ -475,8 +418,6 @@ Run the installation script.
 ./nexus.sh
 ```
 
----
-
 ## 6.2 Verify the Installation
 
 Open the Nexus Repository web interface.
@@ -496,8 +437,6 @@ cat /opt/sonatype-work/nexus3/admin.password
 After logging in, change the default administrator password when prompted.
 
 ![Nexus Dashboard](screenshots/10-nexus-dashboard.png)
-
----
 
 ## 6.3 Create the Maven Repositories
 
@@ -537,8 +476,6 @@ Example:
 http://<NEXUS_SERVER_PUBLIC_IP>:8081/repository/Java-WebApp-Snapshots/
 ```
 
----
-
 ## 6.4 Configure Maven Deployment
 
 Open the project's [`configuration/pom.xml`](configuration/pom.xml).
@@ -562,8 +499,6 @@ Add the following `distributionManagement` section.
 ```
 
 > **Note:** Do not commit the changes yet.
-
----
 
 ## 6.5 Configure the Jenkins Build
 
@@ -592,8 +527,6 @@ Java-Login-App/pom.xml
 ```
 
 Save the job configuration.
-
----
 
 ## 6.6 Authenticate Jenkins with Nexus
 
@@ -626,8 +559,6 @@ The completed `settings.xml` used for this project is available in this reposito
 
 [`configuration/settings.xml`](configuration/settings.xml)
 
----
-
 ## 6.7 Deploy the Artifact
 
 Commit the changes made to the `pom.xml` file to trigger a new Jenkins build.
@@ -642,13 +573,9 @@ After the build completes successfully, verify that the artifact has been publis
 
 ![Nexus WAR Artifact](screenshots/11-nexus-war-artifact.png)
 
----
-
 # 7. Apache Tomcat Setup
 
 This section covers the provisioning of the Apache Tomcat server and its integration with Jenkins for automated application deployment.
-
----
 
 ## 7.1 Provision the Tomcat Server
 
@@ -678,8 +605,6 @@ Run the installation script.
 ./tomcat.sh
 ```
 
----
-
 ## 7.2 Verify the Installation
 
 Open the Tomcat web interface.
@@ -691,8 +616,6 @@ http://<TOMCAT_SERVER_PUBLIC_IP>:8080
 Confirm that the Apache Tomcat landing page is accessible from your web browser.
 
 ![Apache Tomcat Landing Page](screenshots/17-tomcat-landing-page.png)
-
----
 
 ## 7.3 Configure the Tomcat Manager
 
@@ -750,8 +673,6 @@ http://<TOMCAT_SERVER_PUBLIC_IP>:8080/manager/html
 
 ![Tomcat Manager](screenshots/12-tomcat-manager.png)
 
----
-
 ## 7.4 Configure Jenkins Deployment
 
 Before configuring the deployment, install the **Deploy to Container** plugin.
@@ -801,8 +722,6 @@ Click **Add Container** and select:
 Tomcat 9.x Remote
 ```
 
----
-
 ## 7.5 Configure Tomcat Credentials
 
 Click **Add Credentials**.
@@ -835,8 +754,6 @@ Save the Jenkins job configuration.
 
 ![Jenkins Post-build Deployment Configuration](screenshots/19-jenkins-post-build-deployment.png)
 
----
-
 ## 7.6 Enable Artifact Redeployment
 
 Open the Nexus Repository Manager.
@@ -858,8 +775,6 @@ Allow redeploy
 
 Save the repository configuration.
 
----
-
 ## 7.7 Deploy the Application
 
 Return to the Jenkins Freestyle Job.
@@ -880,13 +795,9 @@ Verify that the deployment completed successfully by opening the Tomcat Manager 
 
 ![Tomcat Manager](screenshots/12-tomcat-manager.png)
 
----
-
 # 8. Configure Nginx as a Reverse Proxy
 
 Instead of exposing Apache Tomcat directly on port `8080`, Nginx is configured as a reverse proxy to forward incoming HTTP requests to the deployed application. This provides a cleaner public endpoint while preventing direct access to the Tomcat application server.
-
----
 
 ## 8.1 Install Nginx
 
@@ -916,8 +827,6 @@ Run the installation script.
 ./nginx.sh
 ```
 
----
-
 ## 8.2 Verify the Installation
 
 Confirm that the Nginx service is running.
@@ -927,8 +836,6 @@ sudo systemctl status nginx --no-pager
 ```
 
 Ensure your AWS EC2 Security Group allows inbound HTTP traffic on **TCP Port 80**.
-
----
 
 ## 8.3 Configure the Reverse Proxy
 
@@ -966,8 +873,6 @@ Verify that Nginx is listening on port **80**.
 sudo ss -tlnp | grep :80
 ```
 
----
-
 ## 8.4 Verify the Reverse Proxy
 
 Test the reverse proxy locally.
@@ -990,13 +895,9 @@ http://<PUBLIC-IP>/Java-login-app-1.0/login
 
 The Java Login application should load successfully through the Nginx reverse proxy.
 
----
-
 # 9. Configure Slack Build Notifications
 
 This section configures Slack notifications for Jenkins build events. The names used throughout this section (workspace name, channel name and bot name) are examples based on this project. You are free to use your own names provided they are used consistently throughout the configuration.
-
----
 
 ## 9.1 Create a Slack Workspace
 
@@ -1019,8 +920,6 @@ Example:
 ```
 
 > **Note:** The channel name is also a placeholder. You may use any channel name of your choice.
-
----
 
 ## 9.2 Create a Slack App
 
@@ -1070,8 +969,6 @@ settings:
 
 Review the configuration and create the application.
 
----
-
 ## 9.3 Generate the Bot Token
 
 Open:
@@ -1106,8 +1003,6 @@ Example:
 
 > **Note:** Replace **Jenkins** with the name assigned to your Slack App.
 
----
-
 ## 9.4 Install the Jenkins Slack Plugin
 
 From Jenkins, navigate to:
@@ -1127,8 +1022,6 @@ Slack Notification
 Install the plugin and restart Jenkins if prompted.
 
 ![Slack Notification Plugin](screenshots/20-slack-notification-plugin.png)
-
----
 
 ## 9.5 Configure Slack Credentials
 
@@ -1158,8 +1051,6 @@ Configure the credential as follows.
 
 Save the credential.
 
----
-
 ## 9.6 Configure the Slack Plugin
 
 Continue scrolling until you reach the **Slack** section.
@@ -1183,8 +1074,6 @@ Click **Test Connection**.
 If the configuration is successful, Jenkins will display a confirmation message indicating that the Slack integration is working correctly.
 
 Save the configuration.
-
----
 
 ## 9.7 Configure Jenkins Build Notifications
 
@@ -1232,8 +1121,6 @@ A successful configuration will send build start, build success and build failur
 
 ![Slack Notification](screenshots/15-slack-notification.png)
 
----
-
 # 10. Common Issues and Troubleshooting
 
 | Issue | Possible Solution |
@@ -1249,8 +1136,6 @@ A successful configuration will send build start, build success and build failur
 | GitHub push does not trigger Jenkins | Confirm the GitHub Webhook is configured correctly, Jenkins is publicly reachable, and the webhook delivery reports a successful response. |
 | General troubleshooting | Review the relevant service logs (`systemctl status`, Jenkins Console Output, SonarQube logs, Nexus logs, Tomcat logs, and Nginx logs) to identify the root cause before making configuration changes. |
 
----
-
 # Final Notes
 
 This guide documents the implementation used for this project and is intended to help you reproduce the same CI/CD pipeline in your own AWS environment.
@@ -1258,4 +1143,3 @@ This guide documents the implementation used for this project and is intended to
 Depending on the versions of Jenkins, plugins, SonarQube, Nexus Repository Manager, Apache Tomcat, or Ubuntu available at the time of deployment, some interfaces or configuration options may differ slightly. Where applicable, substitute your own server IP addresses, credentials, repository URLs, workspace names, and authentication tokens.
 
 For an overview of the project architecture, implementation details, screenshots, and the completed pipeline, see the [README.md](README.md) file.
-
